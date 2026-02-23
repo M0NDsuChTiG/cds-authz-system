@@ -1,0 +1,9 @@
+# Compiled binaries
+cds-daemon
+cds-authz-plugin
+
+# Log files
+*.log
+
+# Runtime database
+trust.db

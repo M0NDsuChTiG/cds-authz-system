@@ -1,0 +1,9 @@
+[Unit]
+Description=CDS Daemon Socket
+
+[Socket]
+ListenStream=/run/cds.sock
+SocketMode=0600
+
+[Install]
+WantedBy=sockets.target
