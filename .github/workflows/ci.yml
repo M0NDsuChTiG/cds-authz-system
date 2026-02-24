@@ -1,30 +1,30 @@
-name: CI - Build, Test & Security Scan
+name: CI - Build, Test & Scan
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
 
 permissions:
-  contents: read  # zero-trust: минимизируем права токена
+  contents: read          # минимизируем права GITHUB_TOKEN
 
 jobs:
-  build-test-scan:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # для тестов с git историей, если нужно
+          fetch-depth: 0    # нужно для тестов, если используешь git history
 
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22'  # твоя версия из README (минимум 1.19)
+          go-version: '1.22'   # или твоя версия, минимум 1.19 по README
 
-      - name: Build binaries
+      - name: Build daemon & plugin
         run: |
           cd daemon && go build -o cds-daemon .
           cd ../plugin && go build -o cds-authz-plugin .
@@ -35,6 +35,12 @@ jobs:
           chmod +x test/run_attack_suite.sh
           ./test/run_attack_suite.sh
 
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.58.0  # актуальная версия на 2026
+
+      - name: Scan filesystem with Trivy
+        run: trivy fs --exit-code 1 --no-progress --severity HIGH,CRITICAL .
       - name: Install Trivy
         run: |
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.58.0  # свежая версия на 2026
