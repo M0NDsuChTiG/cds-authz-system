@@ -1,58 +1,43 @@
-name: CDS Zero-Trust CI
+name: CI - Build, Test & Security Scan
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ main ]
   pull_request:
-    branches: [ "main", "master" ]
+    branches: [ main ]
+
+permissions:
+  contents: read  # zero-trust: минимизируем права токена
 
 jobs:
   build-test-scan:
-    name: Build, Test and Scan
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # для тестов с git историей, если нужно
 
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '>=1.19' # Указана минимальная версия из ваших требований
-          cache: true
+          go-version: '1.22'  # твоя версия из README (минимум 1.19)
 
-      - name: Build CDS Daemon
-        working-directory: ./daemon
-        # Компилируем демон и кладем бинарник в корень
-        run: go build -v -o ../cds-daemon
-
-      - name: Build CDS AuthZ Plugin
-        working-directory: ./plugin
-        # Компилируем плагин и кладем бинарник в корень
-        run: go build -v -o ../cds-authz-plugin
-
-      - name: Run Trivy Vulnerability Scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'table'
-          exit-code: '1' # Фейлит пайплайн, если найдены уязвимости
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH' # Ищем только самые серьезные угрозы
-
-      - name: Prepare and Run Attack Simulation Suite
+      - name: Build binaries
         run: |
-          # Выдаем права на выполнение
-          chmod +x ./test/run_attack_suite.sh
-          
-          # GitHub Actions (ubuntu-latest) уже имеет установленный Docker.
-          # Если скрипт run_attack_suite.sh ожидает, что плагин и демон 
-          # уже запущены и Docker сконфигурирован, возможно, здесь потребуется
-          # сначала запустить ваш ./install.sh или поднять сервисы вручную.
-          #
-          # Пример (если тесты сами всё поднимают или вы используете install.sh):
-          # chmod +x ./install.sh && sudo ./install.sh
-          
-          sudo ./test/run_attack_suite.sh
+          cd daemon && go build -o cds-daemon .
+          cd ../plugin && go build -o cds-authz-plugin .
+          cd ..
+
+      - name: Run attack suite tests
+        run: |
+          chmod +x test/run_attack_suite.sh
+          ./test/run_attack_suite.sh
+
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.58.0  # свежая версия на 2026
+
+      - name: Scan with Trivy
+        run: trivy fs --exit-code 1 --severity HIGH,CRITICAL --no-progress .
