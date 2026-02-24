@@ -8,23 +8,20 @@ set -e
 # sudo for installation steps.
 # ==============================================================================
 
-echo "[+] Initializing Go modules..."
-(cd daemon && (/usr/bin/go mod init cds-daemon >/dev/null 2>&1 || true) && /usr/bin/go mod tidy)
-(cd plugin && (/usr/bin/go mod init cds-authz-plugin >/dev/null 2>&1 || true) && /usr/bin/go mod tidy)
+echo "[+] Initializing Go module and dependencies..."
+/usr/bin/go mod tidy
 
-
-echo "[+] Building daemon..."
-(cd daemon && /usr/bin/go build -o cds-daemon)
-echo "Daemon built."
-
-echo "[+] Building plugin..."
-(cd plugin && /usr/bin/go build -o cds-authz-plugin)
-echo "Plugin built."
+echo "[+] Building binaries..."
+/usr/bin/go build -o ./daemon/cds-daemon ./daemon
+/usr/bin/go build -o ./plugin/cds-authz-plugin ./plugin
+/usr/bin/go build -o ./cmd/cds-cli/cds-cli ./cmd/cds-cli
+echo "Binaries built."
 
 
 echo "[+] Installing binaries with sudo..."
-sudo mv daemon/cds-daemon /usr/local/bin/
-sudo mv plugin/cds-authz-plugin /usr/local/bin/
+sudo install ./daemon/cds-daemon /usr/local/bin/
+sudo install ./plugin/cds-authz-plugin /usr/local/bin/
+sudo install ./cmd/cds-cli/cds-cli /usr/local/bin/
 echo "Binaries installed in /usr/local/bin/."
 
 
