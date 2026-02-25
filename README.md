@@ -1,4 +1,6 @@
-# CDS v6.2 - Docker Zero-Trust Authorization System
+# CDS v6.6 - Docker Zero-Trust Authorization System
+
+[![CI](https://github.com/M0NDsuChTiG/cds-authz-system/actions/workflows/ci.yml/badge.svg)](https://github.com/M0NDsuChTiG/cds-authz-system/actions/workflows/ci.yml)
 
 This project implements a production-grade, fail-closed authorization plugin for Docker to enforce Zero-Trust security policies. It ensures that only explicitly trusted container images can be run on a host.
 
