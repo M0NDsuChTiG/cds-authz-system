@@ -114,6 +114,10 @@ Assumptions: Docker daemon configured with plugin; unix socket secure (chown/chm
 
 Contributions welcome — see issues for priorities!
 
+[<image-card alt="Latest Release" src="https://img.shields.io/github/v/release/M0NDsuChTiG/cds-authz-system?color=green" ></image-card>](https://github.com/M0NDsuChTiG/cds-authz-system/releases/latest)
+
+Последняя версия: **[v0.5.0 – Cryptographic Trust Foundation](https://github.com/M0NDsuChTiG/cds-authz-system/releases/tag/v0.5.0)**
+
 ## License
 
 This project is licensed under the MIT License.
