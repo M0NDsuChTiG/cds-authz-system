@@ -8,19 +8,37 @@ This project implements a production-grade, fail-closed authorization plugin for
 
 The system follows a decoupled, high-performance architecture:
 
-*   **`cds-daemon`**: A central Go service that acts as the "Trust Authority". It maintains a persistent database of trusted image digests and their TTLs (Time-To-Live). It provides decisions via a secure UNIX socket API.
-*   **`cds-authz-plugin`**: A native Docker authorization plugin written in Go. It integrates with the Docker daemon via a UNIX socket (`/run/docker/plugins/cds-authz.sock`), intercepting container creation requests. It resolves the image tag to its cryptographic digest and queries `cds-daemon` to get an `ALLOW` or `DENY` decision.
-*   **Offline Verification**: All heavy operations like signature verification or vulnerability scanning are performed offline by other processes (e.g., `cds-verify.sh`), which then update the `cds-daemon`'s trust database. The authorization path remains extremely fast (sub-millisecond).
+```text
+Docker CLI -> Docker Daemon -> AuthZ Plugin -> CDS Daemon -> BoltDB (Trust/Keys/Audit)
+                                     |             |
+                                     +---[DENY]---+ (If Offline/Failure)
+```
 
-## Components
+*   **`cds-daemon`**: The central "Trust Authority". Manages versioned keys, enforces policies, and maintains a forensic audit trail in BoltDB.
+*   **`cds-authz-plugin`**: A thin enforcer proxy. Intercepts `containers/create` and `images/create`, resolves tags to digests, and queries the daemon.
+*   **`cds-cli`**: Management tool for trust anchors and image policies.
 
-The repository is structured as follows:
+## Threat Model
 
-*   `/daemon`: Source code for the `cds-daemon`.
-*   `/plugin`: Source code for the `cds-authz-plugin`.
-*   `/systemd`: Unit files (`.service`, `.socket`) for managing the `cds-daemon` with systemd.
-*   `/test`: Contains the `run_attack_suite.sh` script to validate the system's security guarantees.
-*   `install.sh`: The main installation script.
+CDS is designed to protect against:
+- **Unauthorized Image Execution**: Blocks any container not matching a trusted digest.
+- **Tag Mutation Attacks**: Enforces digest-level pinning regardless of mutable tags (e.g., `latest`).
+- **Compromised Registry**: Even if a registry is breached, only signed/trusted digests are allowed.
+- **Key Compromise**: Supports immediate revocation of trust anchors, invalidating all associated images (Strict Policy).
+
+## Operational Security
+
+### Access Control
+Access to the CDS Unix socket (`/run/cds/cds.sock`) is restricted to the `root` user and the `cds` group. 
+To allow a non-root user to manage trust:
+```bash
+sudo usermod -aG cds <username>
+```
+
+### Key Rotation Policy
+By default, CDS enforces:
+- `revalidate_on_key_revoke: true`: Revoking a key immediately blocks all containers signed by it.
+- `revalidate_on_key_rotation: false`: Older images remain valid after a key is rotated (new version imported), until the old version is explicitly revoked.
 
 ## Installation and Testing
 
