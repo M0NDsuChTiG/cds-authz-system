@@ -7,6 +7,10 @@ ExecStart=/usr/local/bin/cds-daemon
 Restart=always
 User=root
 
+# Redirect cosign/TUF cache to /tmp because of ProtectSystem=strict
+Environment=COSIGN_CACHE=/tmp
+Environment=TUF_ROOT=/tmp
+
 # --- Security hardening ---
 ProtectSystem=strict
 ProtectHome=true
