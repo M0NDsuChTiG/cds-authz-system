@@ -1,9 +1,17 @@
 # Compiled binaries
 cds-daemon
 cds-authz-plugin
+cds-cli
+**/cds-cli
 
 # Log files
 *.log
 
-# Runtime database
+# Runtime database and keys (local only)
 trust.db
+/var/lib/cds/*
+/run/cds/*
+/run/docker/plugins/*
+
+# Go dependencies
+vendor/

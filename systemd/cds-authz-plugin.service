@@ -1,0 +1,20 @@
+[Unit]
+Description=CDS Docker Authorization Plugin
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/cds-authz-plugin
+Restart=always
+User=root
+
+# Security hardening
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+NoNewPrivileges=true
+
+# Allow writing to Docker's plugin directory
+ReadWritePaths=/run/docker/plugins/
+
+[Install]
+WantedBy=multi-user.target

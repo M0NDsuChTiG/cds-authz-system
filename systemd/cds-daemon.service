@@ -1,20 +1,27 @@
 [Unit]
 Description=CDS Zero-Trust Daemon
-Requires=cds-daemon.socket
-After=cds-daemon.socket
+After=network.target
 
 [Service]
 ExecStart=/usr/local/bin/cds-daemon
-User=root
-Group=root
 Restart=always
+User=root
 
-# Security Hardening
-NoNewPrivileges=yes
-PrivateTmp=yes
+# --- Security hardening ---
 ProtectSystem=strict
-ProtectHome=yes
-RestrictAddressFamilies=AF_UNIX
+ProtectHome=true
+PrivateTmp=true
+NoNewPrivileges=true
+
+# Allow access to Docker socket for digest resolution and BoltDB storage
+ReadWritePaths=/run/cds/ /var/run/docker.sock /var/lib/cds/
+RestrictAddressFamilies=AF_UNIX AF_INET
+
+# --- Correct way to create writable directories ---
+RuntimeDirectory=cds
+RuntimeDirectoryMode=0755
+StateDirectory=cds
+StateDirectoryMode=0750
 
 [Install]
 WantedBy=multi-user.target
