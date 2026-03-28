@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDS v0.6.1 | Docker Zero-Trust Authorization</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --text-color: #c9d1d9;
+            --accent-color: #58a6ff;
+            --secondary-bg: #161b22;
+            --border-color: #30363d;
+            --success-color: #238636;
+            --code-bg: #010409;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 4rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        h1 {
+            color: var(--accent-color);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .version-badge {
+            background-color: var(--success-color);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+
+        .hero-desc {
+            font-size: 1.2rem;
+            color: #8b949e;
+        }
+
+        .section {
+            padding: 3rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        h2 {
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background-color: var(--secondary-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-color);
+        }
+
+        .feature-card h3 {
+            margin-top: 0;
+            color: #fff;
+        }
+
+        code, pre {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            background-color: var(--code-bg);
+            border-radius: 6px;
+        }
+
+        pre {
+            padding: 1rem;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            color: #d2a8ff;
+        }
+
+        .command-label {
+            color: #8b949e;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #8b949e;
+            font-size: 0.9rem;
+        }
+
+        a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: #fff;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            background-color: #388bfd;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>CDS <span class="version-badge">v0.6.1</span></h1>
+        <p class="hero-desc">Docker Zero-Trust Authorization System</p>
+        <p>A fail-closed cryptographic trust authority for modern container environments.</p>
+        <a href="https://github.com/M0NDsuChTiG/cds-authz-system" class="btn">View on GitHub</a>
+    </header>
+
+    <div class="section" id="features">
+        <h2>Key Features</h2>
+        <div class="features">
+            <div class="feature-card">
+                <h3>Managed Trust Store</h3>
+                <p>Securely store and manage public keys with versioning and full audit tracking for every administrative action.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Fail-Closed Policy</h3>
+                <p>If the daemon is unreachable or verification fails, container launches are denied by default. Maximum security.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Cosign Integration</h3>
+                <p>Native support for Sigstore/Cosign ensures that only cryptographically signed images can run in your cluster.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Audit Streaming</h3>
+                <p>Real-time logging of allow/deny decisions to syslog and local BoltDB for forensic analysis and monitoring.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="quickstart">
+        <h2>Quick Start</h2>
+        <p>Get up and running with CDS v0.6.1 in minutes.</p>
+        
+        <span class="command-label"># 1. Install via the automated script</span>
+        <pre>git clone https://github.com/M0NDsuChTiG/cds-authz-system.git
+cd cds-authz-system
+./install.sh</pre>
+
+        <span class="command-label"># 2. Import your production public key</span>
+        <pre>cds-cli key import --id prod --path ./my-key.pub</pre>
+
+        <span class="command-label"># 3. Add trust for a specific image digest</span>
+        <pre>cds-cli trust add alpine:latest --key-id prod --digest sha256:251091...</pre>
+
+        <span class="command-label"># 4. Verify status</span>
+        <pre>cds-cli trust list</pre>
+    </div>
+
+    <div class="section" id="architecture">
+        <h2>Security Posture</h2>
+        <p>CDS is designed with <strong>defense-in-depth</strong> principles:</p>
+        <ul>
+            <li><strong>Systemd Sandboxing:</strong> Services run with <code>ProtectSystem=strict</code> and <code>NoNewPrivileges=true</code>.</li>
+            <li><strong>UNIX Socket Isolation:</strong> Communication happens over restricted local sockets with strict permissions.</li>
+            <li><strong>Immutable Trust:</strong> Trust decisions are bound to image digests (sha256), preventing tag-swapping attacks.</li>
+        </ul>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 M0NDsuChTiG. Released under the MIT License.</p>
+        <p>Built for the community with ❤️ and Security in mind.</p>
+    </footer>
+</div>
+
+</body>
+</html>
