@@ -3,16 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CDS v0.6.1 | Docker Zero-Trust Authorization</title>
+    <title>CDS v0.6.1 | Digital Trust Infrastructure</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0d1117;
-            --text-color: #c9d1d9;
-            --accent-color: #58a6ff;
-            --secondary-bg: #161b22;
-            --border-color: #30363d;
-            --success-color: #238636;
-            --code-bg: #010409;
+            --bg-color: #03060a;
+            --text-color: #e6edf3;
+            --accent-color: #2f81f7;
+            --secondary-bg: rgba(22, 27, 34, 0.7);
+            --border-color: rgba(48, 54, 61, 0.8);
+            --success-color: #3fb950;
+            --code-bg: #0d1117;
+            --glow: rgba(47, 129, 247, 0.15);
         }
 
         html {
@@ -20,186 +24,230 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 50% -20%, var(--glow), transparent 50%);
             color: var(--text-color);
             line-height: 1.6;
             margin: 0;
             padding: 0;
+            overflow-x: hidden;
         }
 
         nav {
-            position: sticky;
+            position: fixed;
             top: 0;
-            background-color: rgba(13, 17, 23, 0.9);
-            backdrop-filter: blur(10px);
+            width: 100%;
+            background-color: rgba(3, 6, 10, 0.8);
+            backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-color);
-            z-index: 100;
-            padding: 0.5rem 0;
+            z-index: 1000;
         }
 
         .nav-container {
-            max-width: 900px;
+            max-width: 1100px;
             margin: 0 auto;
             display: flex;
-            justify-content: center;
-            gap: 2rem;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 2rem;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #fff;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
         }
 
         .nav-link {
-            color: var(--text-color);
+            color: #8b949e;
             text-decoration: none;
             font-size: 0.9rem;
             font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            transition: background-color 0.2s;
+            transition: color 0.2s;
         }
 
         .nav-link:hover {
-            background-color: var(--secondary-bg);
             color: var(--accent-color);
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 0 2rem;
         }
 
         header {
             text-align: center;
-            padding: 4rem 0;
-            border-bottom: 1px solid var(--border-color);
+            padding: 8rem 0 5rem;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-icon {
+            margin-bottom: 2rem;
+            filter: drop-shadow(0 0 20px var(--accent-color));
         }
 
         h1 {
-            color: var(--accent-color);
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
+            font-size: 4rem;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -2px;
+            background: linear-gradient(to bottom, #fff, #8b949e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .version-badge {
-            background-color: var(--success-color);
-            color: white;
-            padding: 0.2rem 0.6rem;
-            border-radius: 12px;
-            font-size: 0.9rem;
+            background: rgba(63, 185, 80, 0.15);
+            color: var(--success-color);
+            border: 1px solid rgba(63, 185, 80, 0.3);
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 10px;
             vertical-align: middle;
         }
 
         .hero-desc {
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             color: #8b949e;
+            max-width: 700px;
+            margin: 1.5rem auto;
+            font-weight: 400;
         }
 
         .section {
-            padding: 4rem 0;
-            border-bottom: 1px solid var(--border-color);
+            padding: 6rem 0;
         }
 
         h2 {
-            color: var(--accent-color);
-            border-bottom: 2px solid var(--accent-color);
-            display: inline-block;
-            padding-bottom: 5px;
-            margin-bottom: 2rem;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            text-align: center;
         }
 
         .features {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
         }
 
         .feature-card {
             background-color: var(--secondary-bg);
-            padding: 1.5rem;
-            border-radius: 8px;
+            padding: 2.5rem;
+            border-radius: 16px;
             border: 1px solid var(--border-color);
-            transition: transform 0.2s, border-color 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
 
         .feature-card:hover {
-            transform: translateY(-5px);
             border-color: var(--accent-color);
+            background-color: rgba(22, 27, 34, 0.9);
+            transform: translateY(-8px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .feature-card h3 {
-            margin-top: 0;
+            margin: 0 0 1rem;
             color: #fff;
+            font-size: 1.25rem;
         }
+
+        .feature-card p {
+            color: #8b949e;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .code-window {
+            background-color: var(--code-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+        }
+
+        .code-header {
+            background: #161b22;
+            padding: 12px 20px;
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .red { background: #ff5f56; }
+        .yellow { background: #ffbd2e; }
+        .green { background: #27c93f; }
 
         pre {
-            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-            background-color: var(--code-bg);
-            border-radius: 6px;
-            padding: 1rem;
-            overflow-x: auto;
-            border: 1px solid var(--border-color);
+            margin: 0;
+            padding: 1.5rem;
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 0.9rem;
             color: #d2a8ff;
-            position: relative;
             cursor: pointer;
-        }
-
-        pre:hover::after {
-            content: "Click to copy";
-            position: absolute;
-            top: 5px;
-            right: 10px;
-            font-size: 0.7rem;
-            color: var(--accent-color);
-            background: var(--secondary-bg);
-            padding: 2px 5px;
-            border-radius: 4px;
-        }
-
-        .command-label {
-            color: #8b949e;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-            display: block;
-            margin-top: 1.5rem;
-        }
-
-        footer {
-            text-align: center;
-            padding: 4rem 2rem;
-            color: #8b949e;
-            font-size: 0.9rem;
-        }
-
-        a {
-            color: var(--accent-color);
-            text-decoration: none;
+            overflow-x: auto;
         }
 
         .btn {
             display: inline-block;
-            background-color: var(--accent-color);
-            color: #fff;
-            padding: 0.8rem 1.5rem;
-            border-radius: 6px;
-            font-weight: bold;
-            margin-top: 1rem;
-            transition: background-color 0.2s;
+            background-color: #fff;
+            color: #000;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            margin-top: 2rem;
+            transition: all 0.2s;
+            text-decoration: none;
         }
 
         .btn:hover {
-            background-color: #388bfd;
-            text-decoration: none;
+            background-color: var(--accent-color);
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        footer {
+            text-align: center;
+            padding: 6rem 0;
+            color: #484f58;
+            border-top: 1px solid var(--border-color);
         }
 
         .toast {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--success-color);
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-color);
             color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
             display: none;
-            z-index: 1000;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            z-index: 2000;
         }
     </style>
 </head>
@@ -207,9 +255,15 @@
 
 <nav>
     <div class="nav-container">
-        <a href="#features" class="nav-link">Features</a>
-        <a href="#quickstart" class="nav-link">Quick Start</a>
-        <a href="#architecture" class="nav-link">Security</a>
+        <div class="logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            CDS Infrastructure
+        </div>
+        <div class="nav-links">
+            <a href="#features" class="nav-link">Features</a>
+            <a href="#quickstart" class="nav-link">Quick Start</a>
+            <a href="https://github.com/M0NDsuChTiG/cds-authz-system" class="nav-link">GitHub</a>
+        </div>
     </div>
 </nav>
 
@@ -217,66 +271,69 @@
 
 <div class="container">
     <header>
-        <h1>CDS <span class="version-badge">v0.6.1</span></h1>
-        <p class="hero-desc">Docker Zero-Trust Authorization System</p>
-        <p>A fail-closed cryptographic trust authority for modern container environments.</p>
-        <a href="https://github.com/M0NDsuChTiG/cds-authz-system" target="_blank" rel="noopener noreferrer" class="btn">View on GitHub</a>
+        <div class="hero-icon">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#2f81f7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <path d="M9 12l2 2 4-4"></path>
+            </svg>
+        </div>
+        <h1>Zero-Trust Guard<span class="version-badge">v0.6.1</span></h1>
+        <p class="hero-desc">Modern Cryptographic Authorization for Docker</p>
+        <p style="color: #8b949e;">A fail-closed infrastructure that ensures only signed and trusted containers ever touch your kernels.</p>
+        <a href="https://github.com/M0NDsuChTiG/cds-authz-system" target="_blank" class="btn">Start Deployment</a>
     </header>
 
     <div class="section" id="features">
-        <h2>Key Features</h2>
+        <h2>Built for Security First</h2>
         <div class="features">
             <div class="feature-card">
-                <h3>Managed Trust Store</h3>
-                <p>Securely store and manage public keys with versioning and full audit tracking for every administrative action.</p>
+                <div style="color: var(--accent-color); margin-bottom: 1rem;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </div>
+                <h3>Managed Key Store</h3>
+                <p>Centralized trust authority with versioned public keys and automated rotation policies.</p>
             </div>
             <div class="feature-card">
+                <div style="color: var(--accent-color); margin-bottom: 1rem;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                </div>
                 <h3>Fail-Closed Policy</h3>
-                <p>If the daemon is unreachable or verification fails, container launches are denied by default. Maximum security.</p>
+                <p>Maximum safety: if the verification daemon is unreachable, all new containers are denied by default.</p>
             </div>
             <div class="feature-card">
-                <h3>Cosign Integration</h3>
-                <p>Native support for Sigstore/Cosign ensures that only cryptographically signed images can run in your cluster.</p>
-            </div>
-            <div class="feature-card">
+                <div style="color: var(--accent-color); margin-bottom: 1rem;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                </div>
                 <h3>Audit Streaming</h3>
-                <p>Real-time logging of allow/deny decisions to syslog and local BoltDB for forensic analysis and monitoring.</p>
+                <p>Real-time decision tracking via syslog and local BoltDB for immediate forensic visibility.</p>
             </div>
         </div>
     </div>
 
     <div class="section" id="quickstart">
-        <h2>Quick Start</h2>
-        <p>Get up and running with CDS v0.6.1 in minutes.</p>
-        
-        <span class="command-label"># 1. Install via the automated script</span>
-        <pre onclick="copyCode(this)">git clone https://github.com/M0NDsuChTiG/cds-authz-system.git
-cd cds-authz-system
-./install.sh</pre>
+        <h2 style="text-align: left;">Quick Start</h2>
+        <div class="code-window">
+            <div class="code-header">
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
+                <span style="font-size: 0.8rem; color: #484f58; margin-left: 10px;">bash — install.sh</span>
+            </div>
+            <pre onclick="copyCode(this)"># 1. Install infrastructure
+git clone https://github.com/M0NDsuChTiG/cds-authz-system.git
+cd cds-authz-system && ./install.sh
 
-        <span class="command-label"># 2. Import your production public key</span>
-        <pre onclick="copyCode(this)">cds-cli key import --id prod --path ./my-key.pub</pre>
+# 2. Import trust root
+cds-cli key import --id prod --path ./public.pub
 
-        <span class="command-label"># 3. Add trust for a specific image digest</span>
-        <pre onclick="copyCode(this)">cds-cli trust add alpine:latest --key-id prod --digest sha256:251091...</pre>
-
-        <span class="command-label"># 4. Verify status</span>
-        <pre onclick="copyCode(this)">cds-cli trust list</pre>
-    </div>
-
-    <div class="section" id="architecture">
-        <h2>Security Posture</h2>
-        <p>CDS is designed with <strong>defense-in-depth</strong> principles:</p>
-        <ul>
-            <li><strong>Systemd Sandboxing:</strong> Services run with <code>ProtectSystem=strict</code> and <code>NoNewPrivileges=true</code>.</li>
-            <li><strong>UNIX Socket Isolation:</strong> Communication happens over restricted local sockets with strict permissions.</li>
-            <li><strong>Immutable Trust:</strong> Trust decisions are bound to image digests (sha256), preventing tag-swapping attacks.</li>
-        </ul>
+# 3. Authorize image digest
+cds-cli trust add alpine:latest --key-id prod --digest sha256:25109...</pre>
+        </div>
     </div>
 
     <footer>
-        <p>&copy; 2026 M0NDsuChTiG. Released under the MIT License.</p>
-        <p>Built for the community with ❤️ and Security in mind.</p>
+        <p>&copy; 2026 M0NDsuChTiG. MIT Licensed.</p>
+        <p style="font-size: 0.8rem;">Modern security for the container era.</p>
     </footer>
 </div>
 
