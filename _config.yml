@@ -1,0 +1,6 @@
+theme: jekyll-theme-minimal
+title: CDS v0.6.1
+description: Docker Zero-Trust Authorization System
+show_downloads: true
+google_analytics:
+remote_theme:
