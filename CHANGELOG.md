@@ -1,3 +1,12 @@
+## [0.6.1] - 2026-03-28
+### Fixed
+- **CDS-CLI**: Implemented full standalone CLI logic in `cmd/cds-cli/main.go` to resolve missing `cmd` subpackage issues and broken imports.
+- **Installer**: Updated `install.sh` to correctly build the new CLI and handle systemd services more robustly.
+
+### Added
+- **CDS-CLI**: Added `--digest` flag to `trust add` command for manual digest specification.
+- **CDS-CLI**: Added `trust list` command for better visibility into current trust records.
+
 ## [0.6.0] - 2025-02-26
 ### Added
 - **Managed Key Store:** Centralized trust authority with automated key rotation and revocation policies.  

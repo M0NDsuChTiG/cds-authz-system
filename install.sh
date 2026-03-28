@@ -2,19 +2,19 @@
 set -e
 
 # ==============================================================================
-# CDS v6.2.1 Installer
+# CDS v0.6.1 Installer
 #
-# This script builds the daemon and plugin as the current user, then uses
-# sudo for installation steps.
+# This script builds the daemon, plugin, and the updated CLI.
 # ==============================================================================
 
 echo "[+] Initializing Go module and dependencies..."
-/usr/bin/go mod tidy
+go mod tidy
 
 echo "[+] Building binaries..."
-/usr/bin/go build -o ./daemon/cds-daemon ./daemon
-/usr/bin/go build -o ./plugin/cds-authz-plugin ./plugin
-/usr/bin/go build -o ./cmd/cds-cli/cds-cli ./cmd/cds-cli
+go build -o ./daemon/cds-daemon ./daemon
+go build -o ./plugin/cds-authz-plugin ./plugin
+# Note: CLI is now a standalone main.go in cmd/cds-cli/
+go build -o ./cmd/cds-cli/cds-cli ./cmd/cds-cli/main.go
 echo "Binaries built."
 
 
@@ -26,54 +26,16 @@ echo "Binaries installed in /usr/local/bin/."
 
 
 echo "[+] Installing systemd units with sudo..."
-sudo cp ./systemd/* /etc/systemd/system/
+sudo cp ./systemd/*.service /etc/systemd/system/
 sudo systemctl daemon-reload
 echo "Systemd units installed."
 
 
-echo "[+] Enabling and starting CDS daemon via socket activation..."
-sudo systemctl enable --now cds-daemon.socket
-sudo systemctl enable cds-daemon.service
+echo "[+] Enabling and starting CDS services..."
+sudo systemctl enable --now cds-daemon.service
+sudo systemctl enable --now cds-authz-plugin.service
 echo "CDS services enabled."
 
-# Check if the socket is active
-if sudo systemctl is-active --quiet cds-daemon.socket; then
-  echo "CDS socket is active."
-else
-  echo "Warning: CDS socket failed to start. Check 'sudo systemctl status cds-daemon.socket'." >&2
-fi
-
-
 echo "--------------------------------------------------------"
-echo "CDS Bundle Installation Complete."
+echo "CDS Bundle Installation Complete (v0.6.1)."
 echo "--------------------------------------------------------"
-echo ""
-echo "Next steps to fully enable and test the Docker Authorization Plugin:"
-echo ""
-echo "1. Ensure CDS Daemon is active (systemd handles this, just check status):"
-echo "   sudo systemctl status cds-daemon.socket"
-echo ""
-echo "2. Run the CDS Authorization Plugin (it will create /run/docker/plugins/cds-authz.sock):"
-echo "   In a NEW terminal, run:"
-echo "   sudo /usr/local/bin/cds-authz-plugin"
-echo ""
-echo "   Keep this terminal open to see plugin logs. Ensure no errors."
-echo ""
-echo "3. Verify the plugin handshake before restarting Docker:"
-echo "   curl --unix-socket /run/docker/plugins/cds-authz.sock http://unix/AuthZPlugin.Activate"
-echo "   (Expected output: {\"Implements\":[\"authz\"]})"
-echo ""
-echo "4. Configure Docker to use the authorization plugin:"
-echo "   Create or edit /etc/docker/daemon.json with the following content:"
-echo ""
-echo '   {'
-echo '     "authorization-plugins": ["cds-authz"]'
-echo '   }'
-echo ""
-echo "5. Restart the Docker daemon:"
-echo "   sudo systemctl restart docker"
-echo ""
-echo "6. Run the attack simulation suite in another terminal:"
-echo "   cd cds-bundle"
-echo "   sudo ./test/run_attack_suite.sh"
-echo ""
